@@ -1,2 +1,2 @@
 ﻿# Online-Multiplayer-Cards-Game-Using-Websockets-Socket.IO-
-![proj](/static/img/Screenshot 2023-08-14 183231.png)
+![proj](/static/img/istockphoto-478735009-1024x1024-Cme2Lb3T1-transformed.jpeg)
