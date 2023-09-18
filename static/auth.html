@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter a Room</title>
+    <link rel="stylesheet" href="/auth.css">
+    <link rel="stylesheet" href="/fontawesome-free-5.15.3-web/CSS/ALL.CSS">
+</head>
+<body>
+    <div class="container">
+        <div class="main">
+            <input type="checkbox" name="" id="createCheck">
+            <form action="" class="newForm nameForm">
+                <h1>Join Room</h1>
+               <div class="inputs">
+                <input type="text" class="name-input" placeholder="Enter name">
+               </div>
+               <button type="button" class="join-btn">Next</button>
+            </form>
+
+            <form action="" class="newForm roomForm hide">
+                <div class="loading">
+                    <div class="loader"></div>
+                </div>
+                <div class="error">
+                    <p>Room does not exit!</p>
+                </div>
+                <h1>Join Room</h1>
+               <div class="inputs">
+                <input type="text" class="room-input" placeholder="Room Id">
+                <button type="button" class="generate-btn" title="Create Room">
+                    <label for="createCheck">
+                        <i class="fas fa-pen"></i>
+                    </label>
+                </button>
+               </div>
+               <div class="buttons">
+                    <button type="button" class="join-btn join-b4">Join</button>
+                    <button type="button" class="join-btn create-btn hide">Create Room</button>
+               </div>
+            </form>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
+        const createCheck = document.querySelector('#createCheck')
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const myName = localStorage.getItem('name') || '';
+            document.querySelector('.name-input').value = myName
+            document.querySelector('.nameForm .join-btn').addEventListener('click', ()=>{
+                const userName = document.querySelector('.name-input').value
+                console.log(userName)
+                if(userName != ''){
+                    document.querySelector('.nameForm').classList.add('hide')
+                    document.querySelector('.roomForm').classList.remove('hide')
+                    localStorage.setItem('name', userName)
+                }
+                // console.log(localStorage.getItem('name'))
+            })
+
+        createCheck.addEventListener('change', ()=>{
+            if(createCheck.checked == true){
+                // console.log(true)
+                const roomIdLong = Date.now()
+                // console.log(roomIdLong)
+                const roomId = roomIdLong.toString().split('').splice(6, 5).join('')
+                // console.log(roomId)
+                const roomName = document.querySelector('.room-input').value = roomId;
+                document.querySelector('.room-input').setAttribute('readonly', 'readonly')
+                document.querySelector('.create-btn').classList.remove('hide')
+                document.querySelector('.join-b4').classList.add('hide')
+                document.querySelector('.generate-btn').classList.add('checked')
+            }else{
+                // console.log(false)
+                const roomName = document.querySelector('.room-input').value = '';
+                document.querySelector('.room-input').removeAttribute('readonly')
+                document.querySelector('.create-btn').classList.add('hide')
+                document.querySelector('.join-b4').classList.remove('hide')
+                document.querySelector('.generate-btn').classList.remove('checked')
+            }
+        })
+
+        document.querySelector('.join-b4').addEventListener('click', ()=>{
+            const roomName = document.querySelector('.room-input').value
+           const userName = document.querySelector('.name-input').value
+           const userIdLong = Date.now()
+           const userId = userIdLong.toString().split('').splice(7, 4).join('')
+            let allRooms = []
+            fetch('/getrooms').then((response)=>{
+               return response.json()
+            }).then((data)=>{
+                console.log(data)
+                allRooms = data
+                if(allRooms.includes(roomName)){
+                    console.log('success')
+                    const userDetails = {
+                        name: userName.toLowerCase(),
+                        room: roomName,
+                        userId: userId
+                    }
+                    joinRoom(userDetails)
+                }else{
+                    console.log('room does not exist')
+                    document.querySelector('.roomForm').classList.add('invalid')
+                    setTimeout(function(){
+                        document.querySelector('.roomForm').classList.remove('invalid')
+                    }, 600)
+                }
+            })
+        })
+
+
+        document.querySelector('.roomForm .create-btn').addEventListener('click', ()=>{
+           const roomName = document.querySelector('.room-input').value
+           const userName = document.querySelector('.name-input').value
+           const userIdLong = Date.now()
+        //    console.log(userIdLong)
+           const userId = userIdLong.toString().split('').splice(7, 4).join('')
+        //    console.log(userId)
+           const userDetails = {
+                name: userName.toLowerCase(),
+                room: roomName,
+                userId: userId
+           }
+           joinRoom(userDetails)
+         })
+
+         function joinRoom(userDetails){
+                document.querySelector('.loading').classList.add('show')
+                console.log(userDetails)
+                if(userDetails.room != ''){
+                    const customHeaders = {'Content-Type': "application/json"}
+                    fetch('/joinroom', {
+                            method: 'POST',
+                            headers: customHeaders,
+                            body: JSON.stringify(userDetails)
+                    }).then(()=>{
+                            // console.log(roomName)
+                            document.querySelector('.loading').classList.remove('show')
+                            location.href = '/room'
+                    }).catch((err)=>{
+                        console.log(err)
+                    })
+                }
+           
+          }
+        })
+        
+    </script>
+</body>
+</html>

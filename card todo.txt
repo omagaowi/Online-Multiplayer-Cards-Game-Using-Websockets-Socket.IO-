@@ -1,0 +1,4 @@
+action cards 
+general market
+demand
+last card && winner checking

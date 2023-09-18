@@ -1,0 +1,327 @@
+{
+    "cards": [
+        {
+            "shape": "triangle",
+            "number": 1,
+            "action": "hold on",
+            "demand": null
+        },
+        {
+            "shape": "triangle",
+            "number": 2,
+            "action": "pick 2",
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 3,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 4,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 5,
+            "action": "pick 3",
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 7,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 8,
+            "action": "suspension",
+            "demand": null
+            }, {
+            "shape": "triangle",
+            "number": 10,
+                "action": null,
+                "demand": null
+        },
+        {
+            "shape": "triangle",
+            "number": 11,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "triangle",
+            "number": 12,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "triangle",
+            "number": 13,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "triangle",
+            "number": 14,
+            "action": "go gen",
+            "demand": null
+        },
+        {
+            "shape": "circle",
+            "number": 1,
+            "action": "hold on",
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 2,
+            "action": "pick 2",
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 3,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 4,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 5,
+            "action": "pick 3",
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 7,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 8,
+            "action": "suspension",
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 10,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 11,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 12,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 13,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "circle",
+            "number": 14,
+            "action": "go gen",
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 1,
+            "action": "hold on",
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 2,
+            "action": "pick 2",
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 3,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 5,
+            "action": "pick 3",
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 7,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 10,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 11,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 13,
+            "action": null,
+            "demand": null
+        }, 
+        {
+            "shape": "cross",
+            "number": 14,
+            "action": "go gen",
+            "demand": null
+        }, 
+        {
+            "shape": "square",
+            "number": 1,
+            "action": "hold on",
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 2,
+            "action":  "pick 2",
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 3,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 5,
+            "action": "pick 3",
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 7,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 10,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 11,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 13,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "square",
+            "number": 14,
+            "action": "go gen",
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 1,
+            "action": "hold on",
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 2,
+            "action": "pick 2",
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 3,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 4,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 5,
+            "action": "pick 3",
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 7,
+            "action": null,
+            "demand": null
+        },
+        {
+            "shape": "star",
+            "number": 8 ,
+            "action": "suspension",
+            "demand": null
+        },
+        {
+            "shape": "WHOT",
+            "number": 20,
+            "action": "demand",
+            "demand": "demand1"
+        },
+        {
+            "shape": "WHOT",
+            "number": 20,
+            "action": "demand",
+            "demand": "demand2"
+        },
+        {
+            "shape": "WHOT",
+            "number": 20,
+            "action": "demand",
+            "demand": "demand3"
+        },
+        {
+            "shape": "WHOT",
+            "number": 20,
+            "action": "demand",
+            "demand": "demand4"
+        },
+        {
+            "shape": "WHOT",
+            "number": 20,
+            "action": "demand",
+            "demand": "demand5"
+        }
+    ]
+}

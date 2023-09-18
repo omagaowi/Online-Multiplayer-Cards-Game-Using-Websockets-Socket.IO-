@@ -1,0 +1,927 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.container{
+    width: 100vw;
+    height: 100vh;
+    background: url('img/bg.jpg');
+    background-size: cover;
+}
+
+.small-errors{
+    width: 100vw;
+    height: 30px;
+    background: red;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.small-errors.show{
+    display: flex;
+}
+
+.main{
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(90deg, rgb(255, 255, 255, .8), #fff 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #515151;
+}
+
+.grid{
+    width: 100vw;
+    height: 100vh;
+    border: 6px solid #777777;;
+    display: flex;
+}
+
+
+.game-area{
+    width: 65%;
+    height: 100%;
+    border-right: 6px solid #777777;;
+    background-color: transparent;
+    position: relative;
+}
+
+.demand-bg{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    display: flex;
+    pointer-events: none;
+    background: none;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.demand-bg.show{
+    pointer-events: all;
+}
+
+.demand-bg.show .demand-menu{
+    transform: scale(1);
+    opacity: inherit;
+    pointer-events: all;
+}
+
+.demand-menu{
+    width: 95%;
+    max-width: 300px;
+    min-height: 150px;
+    height: auto;
+     transform: scale(0.5);
+    opacity: 0;
+    transition: all .2s ease;
+    pointer-events: none; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+    background: #fff;
+}
+
+.demand-menu .header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    height: 30px;
+    background: #fa3e40;
+}
+
+.demand-body{
+    width: 100%;
+    min-height: calc( 150px - 30px);
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* background: #0000ff; */
+}
+
+.demand-shape{
+    width: 50px;
+    height: 50px;
+    margin: 0px 5px;
+    flex-shrink: 0;
+    background: #ff6c6c;
+}
+
+.demand-shape:hover{
+    background: #760002;
+    cursor: pointer;
+}
+
+.demand-shape.triangle{clip-path: polygon(50% 0%, 0% 100%, 100% 100%);}
+.demand-shape.cross{clip-path: polygon(10% 25%, 35% 25%, 35% 0%, 65% 0%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 10% 50%);}
+.demand-shape.star{clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);}
+.demand-shape.circle{border-radius: 50%;}
+
+
+.players{
+    width: 35%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+}
+
+.game-area .section{
+    width: 100%;
+    height: 50%;
+}
+
+.section.general{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.general-cards{
+    width: 50%;
+    max-width: 190px;
+    height: 231px;
+    background: #fff;
+    margin: 0px 30px;
+   cursor: pointer;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+
+
+.general-cards.pile{
+    background: #760002;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    color: #fff;
+}
+
+.general-cards.demandpend{
+    animation: demandpending .8s infinite linear;
+}
+
+.general-cards.shake{
+    animation: shake .3s 1 linear;
+}
+
+.game-area .section:last-child{
+    border-top: 6px solid #777777;
+}
+
+.game-area .section.mine{
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: #0000001a;
+}
+
+.mine-overflow{
+    width: 200%;
+    height: 90%;
+    display: flex;
+}
+
+.mine-overflow .my-card, .general-cards .my-card{
+    width: 190px;
+    height: 100%;
+    background: #ffffff;
+    margin: 0px 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: all;
+}
+
+.mine-overflow .my-card.disable{
+    opacity: .7;
+    pointer-events: none;
+}
+
+.general-cards .my-card{
+    margin: 0px;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.my-card .number-div:first-child{
+    position: absolute;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    left: 10px;
+}
+
+.my-card img{
+    display: none;
+}
+
+.my-card.WHOT img{
+    display: flex;
+}
+
+.my-card.WHOT .shape-major img{
+    width: 130px;
+    height: 150px;
+}
+
+.my-card.WHOT .number-div img{
+    width: 25px;
+    height: 30px;
+}
+
+.my-card.WHOT .shape{
+    display: none;
+}
+
+.my-card .shape{
+    background: #ff4949;
+}
+
+.my-card .number-div:last-child{
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    right: 10px;
+}
+
+.my-card .number-div span{
+    font-size: 25px;
+    font-weight: bold;
+    color: #fa3e40;
+}
+
+.my-card .number-div .shape{
+    width: 20px;
+    height: 25px;
+    opacity: .6;
+}
+
+.my-card .shape-major .shape{
+    width: 130px;
+    height: 150px;
+}
+
+.my-card.star .shape{ clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);}
+.my-card.cross .shape{clip-path: polygon(10% 25%, 35% 25%, 35% 0%, 65% 0%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 10% 50%);}
+.my-card.circle .shape{border-radius: 50%;}
+.my-card.triangle .shape{clip-path: polygon(50% 0%, 0% 100%, 100% 100%);}
+.my-card.cross .shape-major .shape{width: 150px;}
+.my-card.square .shape-major .shape{width: 120px; height: 120px;}
+
+.players .buttons{
+    width:  auto;
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.players button{
+    height: 30px;
+     width: 80px;
+    margin: 0px 10px;
+    border: none;
+    cursor: pointer;
+    pointer-events: all;
+    margin-bottom: 6px;
+}
+
+.players .startBtn{
+    background: #00b900;
+    color: #fff;
+}
+
+.players .startBtn.inactive{
+    opacity: .6;
+    pointer-events: none;
+}
+
+.players .leaveGame{
+    color: red;
+}
+
+.players .endGame{
+    background: red;
+    color: #fff;
+}
+
+
+.error-bg{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    background: rgb(255, 255, 255, .8);
+    height: 100vh;
+}
+
+.error-bg.show{
+    display: flex;
+}
+
+.error-window, .leave-window, .sus-window{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+    scale(0.3);
+    pointer-events: none;
+    opacity: 0;
+    max-width: 270px;
+    height: 230px;
+    color: #515151;
+    width: 90%;
+    display: flex;
+    transition: all 0.3s ease;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+    background: #fff;
+}
+
+.leave-window, .sus-window{
+    max-width: 240px;
+    transition: all 0.3s ease;
+}
+
+.leave-window h3{
+    margin-top: 10px;
+}
+
+.error-window.show, .leave-window.show, .sus-window.show{
+    transform: translate(-50%, -50%)
+    scale(1);
+    pointer-events: all;
+    opacity: initial;
+}
+
+.loading-window{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 150px;
+    height: 150px;
+    color: #515151;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+    background: #fff;
+}
+
+.loader{
+    position: absolute;
+    width: 70px;
+    height: 70px;
+}
+
+.loading-window.remove{
+    display: none;
+}
+
+.loading-ring{
+    width: 70px;
+    height: 70px;
+    border: 6px solid #ff6c6c;
+    border-left: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    animation: anticlockwise 2s infinite linear;
+}
+
+.minor-ring{
+    content: '';
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 12px;
+    left: 13px;
+    border: 6px solid #ff9292;
+    border-right: 6px solid transparent;
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    position: relative;
+    animation: clockwise 2s infinite linear;
+}
+
+.error-window svg, .leave-window svg:nth-child(2), .sus-window svg{
+    width: 100px;
+    height: 100px;
+    color: #ff4949;
+}
+
+.leave-window .close{
+    position: absolute;
+    top: 20px;
+    right: 10px;
+}
+
+.leave-window .close svg{
+    width: 20px;
+    height: 20px;
+    color: #fa3e40;
+    cursor: pointer;
+}
+
+.leave-window button{
+    color: #fa3e40;
+}
+
+.error-window h3, .leave-window h3, .sus-window h3{
+    font-size: 23px;
+}
+
+.error-window p, .leave-window p, .sus-window p{
+    font-size: 14px;
+}
+
+.error-window button, .leave-window button, .sus-window button{
+    width: 70px;
+    height: 30px;
+    margin-top: 15px;
+    border: none;
+    cursor: pointer;
+}
+
+.error-window a{
+    text-decoration: none;
+    color: black;
+}
+
+.leaveGame a{
+    text-decoration: none;
+    color: red;
+}
+
+.buttons button.hide{
+    display: none;
+}
+
+@keyframes clockwise {
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes anticlockwise {
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(-360deg);
+    }
+}
+
+.players-section{
+    width: 90%;
+    height: 90%;
+    margin-top: 10px;
+    overflow-x: hidden;
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    /* background: #515151; */
+}
+
+.room-id{
+    width: 100px;
+    height: 30px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #cfcfcf;
+}
+
+.room-id.show{
+    display: flex;
+}
+
+.players-overflow{
+    width: 95%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player-card{
+    max-width: 300px;
+    width: 100%;
+    height: 170px;
+    /* background: #515151; */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.player-card.my-turn{
+    border: 3px solid #98ff98;
+}
+
+
+/* .player-card.offline{
+    opacity: .4;
+}
+
+.player-card.player-card.offline .player-name{
+    background: #4d4d4d;
+} */
+
+.player-card.finished{
+    opacity: .5;
+}
+
+.player-card img{
+    max-width: 150px;
+    width: 90%;
+    height: 150px;
+}
+
+.player-card .player-name{
+    min-width: 70px;
+    width: auto;
+    max-width: 90px;
+    height: 27px;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    border-radius: 7px;
+    margin-left: 10px;
+    justify-content: center;
+
+}
+
+.player-card .player-name p{
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.timer-animation{
+    position: fixed;
+    top: -5px;
+    left: 0px;
+    width: 0%;
+    height: 13px;
+    background: #fa3e40;
+}
+
+.timer-animation.animate{
+    animation-name: timer;
+    animation-duration: 15s;
+    animation-iteration-count: 1;
+}
+
+.alerts{
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%, -10px);
+    opacity: 0;
+    transition: all .5s ease-in;
+    pointer-events: none;
+    min-width: 150px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    padding: 0px 7px;
+    border-radius: 5px;
+    justify-content: center;
+    height: 35px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+    color: #fff;
+}
+
+.alerts.reveal{
+    transform: translate(-50%, 0px);
+    opacity: initial;
+    pointer-events: all;
+}
+
+.alerts .join-name{
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+.alerts.joined{
+    background: #00b900;
+}
+.alerts.left{
+    background: red;
+}
+
+.alerts.pending{
+    animation: pending .8s infinite linear;
+}
+
+.player-name.player0, .card-qty.player0, .alerts.player0, .mobile-name.player0{ background: #ff4949; }
+.player-name.player1, .card-qty.player1, .alerts.player1, .mobile-name.player1{ background: #0000ff; }
+.player-name.player2, .card-qty.player2, .alerts.player2, .mobile-name.player2{ background: #800080; }
+.player-name.player3, .card-qty.player3, .alerts.player3, .mobile-name.player3{ background: #00b900; }
+.player-name.player4, .card-qty.player4, .alerts.player4, .mobile-name.player4{ background: #87ceeb; }
+
+.mobile-bar{
+    width: 100%;
+    height: 40px;
+    display: none;
+    background: rgb(255, 255, 255, .6);
+}
+
+.player-no{
+    width: 50px;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    color: #fa3e40;
+    justify-content: center;
+}
+
+.player-no span{
+    margin-left: 5px;
+    font-size: 20px;
+}
+.mobile-section{
+    width: calc(100vw - 60px);
+    height: 100%;
+    overflow-y: hidden;
+    /* background: #0000ff; */
+}
+
+/* .mobile-section::-webkit-scrollbar{
+    visibility: hidden;
+} */
+
+.mobile-overflow{
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.mobile-name{
+    width: auto;
+    height: 27px;
+    color: #fff;
+    margin-top: 4px;
+    display: flex;
+    border-radius: 7px;
+    align-items: center;
+    margin-left: 10px;
+    justify-content: center;
+}
+
+.mobile-name.my-turn{
+    border: 2px solid #98ff98;
+}
+
+.mobile-p-name{
+    max-width: 70px;
+    width: auto;
+    overflow: hidden;
+    margin: 0px 4px;
+    margin-top: -2px;
+    height: 100%;
+}
+
+.mobile-name p{
+    max-width: 200px;
+    width: auto;
+    height: 100%;
+    word-wrap: none;
+    display: flex;
+    align-items: center;
+    /* text-align: center; */
+}
+
+
+.mobile-name.you p{
+    font-size: 15px;
+}
+
+.mobile-name.other{
+    max-width: 90px;
+}
+
+.mobile-name.other .mobile-p-name{
+    width: auto;
+    min-width: 70px;
+}
+.mobile-name.other p{
+    width: auto;
+    min-width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pile-qty{
+    width: 30;
+    height: 30px;
+    background: #fff;
+    color: red;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-qty{
+    width: 30px;
+    height: 30px;
+    /* background: #fa3e40; */
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.players-overflow .card-qty{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: none;
+}
+
+
+.mobile-section .card-qty{
+    width: 17px;
+    height: 17px;
+    font-size: 10px;
+    background: #fff;
+    color: red;
+    margin-right: 3px;
+    position: relative;
+}
+
+.player-card.you .card-qty{
+    display: flex;
+}
+
+.check-up-bg{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgb(255, 255, 255, .8);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.check-up-bg h1{
+    font-size: 38px;
+    color: #fe676a;
+}
+
+.section.mine.check-up .check-up-bg{
+    display: flex;
+}
+
+.section.mine.check-up .mine-overflow{
+    display: none;
+}
+
+.check-up-bg p{
+    font-size: 15px;
+}
+
+
+@keyframes pending{
+    0%{
+       transform: translate(-50%, 0px);
+    }
+    90%{
+        transform: translate(-50%, -7px);
+    }
+    100%{
+        transform: translate(-50%, 0px);
+    }
+}
+
+@keyframes demandpending{
+    0%{
+       transform: translateY(0px);
+    }
+    90%{
+        transform: translateY(-7px);
+    }
+    100%{
+        transform: translateY(0px);
+    }
+}
+
+@keyframes shake{
+    0%, 40%, 60%, 80%, 100% {
+        transform:  translateX(-10px);;
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(10px);;
+    }
+  }
+
+@media screen and (max-width: 820px) {
+    .player-card{
+        max-width: 200px;
+        flex-direction: column;
+        height: 200px;
+    }
+
+    .player-name{
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .players-overflow{
+        display: none;
+    }
+    .players .buttons{
+        margin-bottom: 10px;
+    }
+    .mobile-bar{
+        display: flex;
+    }
+    .grid{
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+    }
+    .game-area{
+        width: 100vw;
+    }
+    .players{
+        position: relative;
+        margin-top: 20px;
+        width: 100vw;
+        height: 90px;
+    }
+    .players-section{
+        margin-top: 4px;
+    }
+    .general-cards{
+        margin: 0px 10px;
+    }
+    .mine-overflow{
+        height: 90%;
+    }
+    .game-area .section.mine{
+        height: 56%;
+    }
+}
