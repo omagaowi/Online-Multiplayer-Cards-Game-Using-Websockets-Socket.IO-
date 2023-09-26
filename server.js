@@ -122,6 +122,7 @@ io.on('connection', (socket, cb)=>{
     })
     socket.on('startGame', (roomName)=>{
         hasStarted.push(roomName)
+        hasFinished = hasFinished.filter((el)=> {return el.room != roomName})
         console.log(hasStarted)
         cards = cards.sort(() => Math.random() - 0.5)
         io.to(roomName).emit('shuffle', cards)

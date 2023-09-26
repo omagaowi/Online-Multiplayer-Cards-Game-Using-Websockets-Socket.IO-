@@ -106,6 +106,7 @@
     background: blue;
     display: flex;
     margin: 5px 10px;
+    align-items: center;
     /* opacity: .6; */
     padding-left: 7px;
     border-radius: 10px;
@@ -123,7 +124,7 @@
 }
 
 .player .name{
-    width: 85%;
+    width: 60%;
     height: 100%;
     padding: 0px 10px;
     display: flex;
@@ -132,6 +133,19 @@
     font-weight: bold;
     overflow: hidden;
     /* background: red; */
+}
+
+.card-no{
+    width: 27px;
+    height: 27px;
+    background: #fff;
+    border-radius: 50%;
+    position: relative;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fa3e40;
 }
 
 .player.player0{ background: #ff4949; }

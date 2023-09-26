@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             })
             socket.on('user-finished', (emitUsers)=>{
               // console.log('finn', emitUsers)
-              usersList = users.users.filter((el)=> {return el.room == roomName})
+              usersList = emitUsers.users.filter((el)=> {return el.room == roomName})
               const stillUsers = usersList.filter(function(el){return el.finished == false})
               alert(`${emitUsers.concern.userName} has check up!`)
               if(stillUsers.length <= 1){
@@ -343,6 +343,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
     function checkGameTurn(turn, myIndex){
+      if(turn >= usersList.length){
+        console.log('false')
+      }else{
+        console.log('true')
+      }
       document.querySelector('.demand-bg').classList.remove('show')
       document.querySelector('.player-card.you .card-qty').innerHTML = myCards.length
       document.querySelector('.mobile-name.you .card-qty').innerHTML = myCards.length

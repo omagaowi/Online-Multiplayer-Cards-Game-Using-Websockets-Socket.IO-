@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       onResult = false
     })
     function displayResults(results){
+      console.log(results)
       document.querySelector('.loading').classList.add('remove')
       console.log(results)
       const myUser = results.find((el) => el.userId == getCookieValue('userId'))
@@ -63,6 +64,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
         `
         standings.innerHTML += playerElem
       });
+
+      document.querySelectorAll('.player').forEach((player, index) => {
+          console.log(player)
+          if(results[index].length != 'undefined' || results[index].length != undefined){
+            const playNo = `
+              <div class="card-no">
+                ${results[index].length}
+              </div>    `
+            player.innerHTML += playNo
+          }
+      })
+
     }
     document.querySelector('.restart-btn').addEventListener('click', ()=>{
       socket.emit('reset', getCookieValue('roomId'))
