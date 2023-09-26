@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
       document.querySelectorAll('.player').forEach((player, index) => {
           console.log(player)
-          if(results[index].length != 'undefined' || results[index].length != undefined){
+          if(results[index].length == 'undefined' || results[index].length == undefined){ }else{
             const playNo = `
               <div class="card-no">
                 ${results[index].length}
