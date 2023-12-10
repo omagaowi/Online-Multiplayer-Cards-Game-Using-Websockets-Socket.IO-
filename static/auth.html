@@ -87,6 +87,7 @@
            const userIdLong = Date.now()
            const userId = userIdLong.toString().split('').splice(7, 4).join('')
             let allRooms = []
+            document.querySelector('.loading').classList.add('show')
             fetch('/getrooms').then((response)=>{
                return response.json()
             }).then((data)=>{
@@ -137,7 +138,6 @@
                             body: JSON.stringify(userDetails)
                     }).then(()=>{
                             // console.log(roomName)
-                            document.querySelector('.loading').classList.remove('show')
                             location.href = '/room'
                     }).catch((err)=>{
                         console.log(err)

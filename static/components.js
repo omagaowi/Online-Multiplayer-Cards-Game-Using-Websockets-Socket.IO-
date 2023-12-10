@@ -16,7 +16,7 @@ export function getUserCard(player, index){
 
 export function getMyStackCard(mine, index){
     const myCard = `
-            <div class="my-card ${mine.shape}">
+            <div class="my-card ${mine.shape}" data-id="${mine.id}">
                 <div class="number-div">
                     <span class="number">${mine.number}</span>
                     <div class="shape"></div>

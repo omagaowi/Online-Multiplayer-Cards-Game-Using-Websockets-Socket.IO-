@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const position = ['st', 'nd', 'rd', 'th', 'th',]
   const comments = ['You Won !! Good Job', 'So close, yet so far!', 'Better luck next time!!', 'Better luck next time!!', 'Better luck next time!!']
     let onResult = true
+    let filterResults = []
     function getCookieValue(cookieName) {
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     const userDetails = {
-      roomName: getCookieValue('roomId'),
+      roomName: `${getCookieValue('roomId')}`,
       userId: getCookieValue('userId'),
       name: getCookieValue('userName')
     }
@@ -25,7 +26,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     socket.on('results', (results)=>{
       if(onResult == false){}else{
         if(results.length != 0){
-          displayResults(results)
+          filterResults = results.filter((el)=> { return el.room == getCookieValue('roomId')})
+          displayResults(filterResults)
         }else{
           document.querySelector('.main').innerHTML = ''
         }
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     })
 
     socket.on('restart', (reset)=>{
-      location.href = '/room'
+      location.href = `/restart/${reset}`
     })
 })
 

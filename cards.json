@@ -1,323 +1,378 @@
 {
     "cards": [
         {
+            "id": "t1",
             "shape": "triangle",
             "number": 1,
             "action": "hold on",
             "demand": null
         },
         {
+            "id": "t2",
             "shape": "triangle",
             "number": 2,
             "action": "pick 2",
             "demand": null
         }, 
         {
+            "id": "t3",
             "shape": "triangle",
             "number": 3,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "t4",
             "shape": "triangle",
             "number": 4,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "t5",
             "shape": "triangle",
             "number": 5,
             "action": "pick 3",
             "demand": null
         }, 
         {
+            "id": "t7",
             "shape": "triangle",
             "number": 7,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "t8",
             "shape": "triangle",
             "number": 8,
             "action": "suspension",
             "demand": null
-            }, {
+        }
+        ,{
+            "id": "t10",
             "shape": "triangle",
             "number": 10,
-                "action": null,
-                "demand": null
+            "action": null,
+            "demand": null
         },
         {
+            "id": "t11",
             "shape": "triangle",
             "number": 11,
             "action": null,
             "demand": null
         },
         {
+            "id": "t12",
             "shape": "triangle",
             "number": 12,
             "action": null,
             "demand": null
         },
         {
+            "id": "t13",
             "shape": "triangle",
             "number": 13,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "t14",
             "shape": "triangle",
             "number": 14,
             "action": "go gen",
             "demand": null
         },
         {
+            "id": "c1",
             "shape": "circle",
             "number": 1,
             "action": "hold on",
             "demand": null
         }, 
         {
+            "id": "c2",
             "shape": "circle",
             "number": 2,
             "action": "pick 2",
             "demand": null
         }, 
         {
+            "id": "c3",
             "shape": "circle",
             "number": 3,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c4",
             "shape": "circle",
             "number": 4,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c5",
             "shape": "circle",
             "number": 5,
             "action": "pick 3",
             "demand": null
         }, 
         {
+            "id": "c7",
             "shape": "circle",
             "number": 7,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c8",
             "shape": "circle",
             "number": 8,
             "action": "suspension",
             "demand": null
         }, 
         {
+            "id": "c10",
             "shape": "circle",
             "number": 10,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c11",
             "shape": "circle",
             "number": 11,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c12",
             "shape": "circle",
             "number": 12,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c13",
             "shape": "circle",
             "number": 13,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "c14",
             "shape": "circle",
             "number": 14,
             "action": "go gen",
             "demand": null
         }, 
         {
+            "id": "cr1",
             "shape": "cross",
             "number": 1,
             "action": "hold on",
             "demand": null
         }, 
         {
+            "id": "cr2",
             "shape": "cross",
             "number": 2,
             "action": "pick 2",
             "demand": null
         }, 
         {
+            "id": "cr3",
             "shape": "cross",
             "number": 3,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "cr5",
             "shape": "cross",
             "number": 5,
             "action": "pick 3",
             "demand": null
         }, 
         {
+            "id": "cr7",
             "shape": "cross",
             "number": 7,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "cr10",
             "shape": "cross",
             "number": 10,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "cr11",
             "shape": "cross",
             "number": 11,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "cr13",
             "shape": "cross",
             "number": 13,
             "action": null,
             "demand": null
         }, 
         {
+            "id": "cr14",
             "shape": "cross",
             "number": 14,
             "action": "go gen",
             "demand": null
         }, 
         {
+            "id": "s1",
             "shape": "square",
             "number": 1,
             "action": "hold on",
             "demand": null
         },
         {
+            "id": "s2",
             "shape": "square",
             "number": 2,
             "action":  "pick 2",
             "demand": null
         },
         {
+            "id": "s3",
             "shape": "square",
             "number": 3,
             "action": null,
             "demand": null
         },
         {
+            "id": "s4",
             "shape": "square",
             "number": 5,
             "action": "pick 3",
             "demand": null
         },
         {
+            "id": "s7",
             "shape": "square",
             "number": 7,
             "action": null,
             "demand": null
         },
         {
+            "id": "s10",
             "shape": "square",
             "number": 10,
             "action": null,
             "demand": null
         },
         {
+            "id": "s11",
             "shape": "square",
             "number": 11,
             "action": null,
             "demand": null
         },
         {
+            "id": "s13",
             "shape": "square",
             "number": 13,
             "action": null,
             "demand": null
         },
         {
+            "id": "s14",
             "shape": "square",
             "number": 14,
             "action": "go gen",
             "demand": null
         },
         {
+            "id": "st1",
             "shape": "star",
             "number": 1,
             "action": "hold on",
             "demand": null
         },
         {
+            "id": "st2",
             "shape": "star",
             "number": 2,
             "action": "pick 2",
             "demand": null
         },
         {
+            "id": "st3",
             "shape": "star",
             "number": 3,
             "action": null,
             "demand": null
         },
         {
+            "id": "st4",
             "shape": "star",
             "number": 4,
             "action": null,
             "demand": null
         },
         {
+            "id": "st5",
             "shape": "star",
             "number": 5,
             "action": "pick 3",
             "demand": null
         },
         {
+            "id": "st7",
             "shape": "star",
             "number": 7,
             "action": null,
             "demand": null
         },
         {
+            "id": "st8",
             "shape": "star",
             "number": 8 ,
             "action": "suspension",
             "demand": null
         },
         {
+            "id": "wh1",
             "shape": "WHOT",
             "number": 20,
             "action": "demand",
             "demand": "demand1"
         },
         {
+            "id": "wh2",
             "shape": "WHOT",
             "number": 20,
             "action": "demand",
             "demand": "demand2"
         },
         {
+            "id": "wh3",
             "shape": "WHOT",
             "number": 20,
             "action": "demand",
             "demand": "demand3"
         },
         {
+            "id": "wh4",
             "shape": "WHOT",
             "number": 20,
             "action": "demand",
             "demand": "demand4"
         },
         {
+            "id": "wh5",
             "shape": "WHOT",
             "number": 20,
             "action": "demand",

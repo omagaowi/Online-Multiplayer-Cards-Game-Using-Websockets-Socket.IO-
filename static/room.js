@@ -1,7 +1,9 @@
-const socket = io()
+  const socket = io()
 import { myCardAllocation } from "./shuffle.js"
 import { getMyStackCard, renderStandardCard, getUserCard } from "./components.js"
-console.log(document.cookie)
+import { displaySpecialAlert } from "./specialAlerts.js"
+
+// console.log(document.cookie)
 const playersContainer = document.querySelector('.players-overflow')
 const mineContainer = document.querySelector('.mine-overflow')
 const generalCards = document.querySelector('.general-cards.pile')
@@ -84,7 +86,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
           }else{
             document.querySelector('.error-bg').classList.remove('show')
             document.querySelector('.room-id').classList.add('show')
-            document.querySelector('.room-id').innerHTML = `room${roomName}`
+            document.querySelector('.room-id p').innerHTML = `room${roomName}`
+             document.querySelector(".room-id").dataset.roomId = roomName
             socket.emit('joinRoom', userDetails)
             socket.on('users', (users)=>{
               console.log(users)
@@ -188,6 +191,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             document.querySelector('.startBtn').addEventListener('click', ()=>{
               console.log('start')
               if(usersList.length < 2){
+                document.querySelector('.small-errors h3').innerHTML = 'At least 2 players are required to start a game'
                 document.querySelector('.small-errors').classList.add('show')
                 setTimeout(()=>{
                   document.querySelector('.small-errors').classList.remove('show')
@@ -271,6 +275,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       alertsElem.classList.remove('pending')
       
       setTimeout(function(){
+          document.querySelector(".full-loader").classList.remove("show");
         checkGameTurn(turn, myIndex) 
         alertsElem.classList.add(`player${turn}`)
       }, 500)
@@ -325,6 +330,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
         console.log('pre-turn', turn)
         turn = 0;
         console.log('turn check', turn)
+          fullTurn = {
+           myCard: standardCard,
+           roomName: getCookieValue("roomId"),
+           player: 0,
+           gameTurn: turn,
+           special: null,
+         };
+
         // console.log(standardCard)
         alertsElem.classList.add(`player${turn}`)
         checkGameTurn(turn, myIndex)
@@ -343,11 +356,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
     function checkGameTurn(turn, myIndex){
+        document.querySelector(".full-loader").classList.remove("show");
       if(turn >= usersList.length){
+        document.querySelector('.small-errors h3').innerHTML = 'An Error Occured! A turn may be skipped'
+        document.querySelector('.small-errors').classList.add('show')
+        setTimeout(()=>{
+          document.querySelector('.small-errors').classList.remove('show')
+        }, 1500)
         console.log('false')
-      }else{
-        console.log('true')
+        if(myIndex == 1){
+          turn = 0;
+          console.log('turn check', turn);
+          const playInfo = {
+            myCard: standardCard,
+            roomName: getCookieValue('roomId'),
+            player: fullTurn.player,
+            gameTurn: turn,
+            special: null
+          }
+          document.querySelector('.full-loader').classList.add('show')
+          socket.emit('change-turn', playInfo)
+        }
       }
+      displaySpecialAlert(turn, myIndex, fullTurn, usersList)
       document.querySelector('.demand-bg').classList.remove('show')
       document.querySelector('.player-card.you .card-qty').innerHTML = myCards.length
       document.querySelector('.mobile-name.you .card-qty').innerHTML = myCards.length
@@ -378,7 +409,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
       document.querySelector('.pile-qty').innerHTML = generalPile.length
         generalCards.querySelector('p').innerHTML = `Tap to pick one`
-        if(standardCard.action == 'pile'){
+        if(standardCard.action == 'pile' && !fullTurn.genInit){
           // console.log('pile')
           console.log('p1')
           generalPile.pop()
@@ -449,6 +480,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 gameTurn: turn,
                 special: null
               }
+                document.querySelector(".full-loader").classList.add("show");
               socket.emit('change-turn', playInfo)
             }else{
               console.log('pre turn', turn)
@@ -461,12 +493,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 gameTurn: turn,
                 special: null
               }
+                document.querySelector(".full-loader").classList.add("show");
               socket.emit('change-turn', playInfo)
             }
           }else{
             hasEmitted = true
             susOkay = true
-              if (standardCard.action == 'suspension' || standardCard.action == 'hold on'){
+              if (standardCard.action == 'suspension'){
                 const susAct = standardCard.action
                 alert(`${fullTurn.player} you on ${susAct}`)
                     if(usersList.length - myIndex <= 1){
@@ -483,6 +516,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                           gameTurn: turn,
                           special: null
                         }
+                          document.querySelector('.full-loader').classList.add('show')
                         socket.emit('change-turn', playInfo)
                         susOkay = false
                         document.querySelector('.error-bg').classList.remove('show')
@@ -504,6 +538,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                           gameTurn: turn,
                           special: null
                         }
+                          document.querySelector('.full-loader').classList.add('show')
                         socket.emit('change-turn', playInfo)
                         console.log('emit')
                         susOkay = false
@@ -512,7 +547,60 @@ document.addEventListener('DOMContentLoaded', ()=>{
                         console.log(susOkay)
                     }
                 // alert(`${fullTurn.player} put you on ${susAct}`)
-              }else if (standardCard.demand != null){
+              }else if(standardCard.action == 'hold on'){
+                    const susAct = standardCard.action;
+                    alert(`${fullTurn.player} you on ${susAct}`);
+                    if (myIndex == 0) {
+                      console.log("pre-turn", turn);
+                      console.log(susOkay);
+                      if (susOkay == true) {
+                        turn = usersList.length - 1;
+                        console.log("turn check", turn);
+                        standardCard.action = null;
+                        const playInfo = {
+                          myCard: standardCard,
+                          roomName: getCookieValue("roomId"),
+                          player: getCookieValue("userName"),
+                          gameTurn: turn,
+                          special: null,
+                        };
+                        socket.emit("change-turn", playInfo);
+                        susOkay = false;
+                        document
+                          .querySelector(".error-bg")
+                          .classList.remove("show");
+                        document
+                          .querySelector(".sus-window")
+                          .classList.remove("show");
+                      } else {
+                      }
+                    } else {
+                      console.log("pre turn", turn);
+                      console.log("okay 1", susOkay);
+                      console.log("okay 3", susOkay);
+                      turn = myIndex - 1;
+                      console.log("check turn error", turn);
+                      standardCard.action = null;
+                      const playInfo = {
+                        myCard: standardCard,
+                        roomName: getCookieValue("roomId"),
+                        player: getCookieValue("userName"),
+                        gameTurn: turn,
+                        special: null,
+                      };
+                      socket.emit("change-turn", playInfo);
+                      console.log("emit");
+                      susOkay = false;
+                      document
+                        .querySelector(".error-bg")
+                        .classList.remove("show");
+                      document
+                        .querySelector(".sus-window")
+                        .classList.remove("show");
+                      console.log(susOkay);
+                    }
+              }
+              else if (standardCard.demand != null){
                 setTimeout(function(){
                   alertsElem.innerHTML = `${fullTurn.player} demands for ${standardCard.demand}`
                   alertsElem.classList.add('pending')
@@ -520,16 +608,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
               }
               console.log(turn)
 
-              if (standardCard.action == 'pick 2' || standardCard.action == 'pick 3' || standardCard.action == 'go gen'){
+              if (fullTurn.genInit || standardCard.action == 'go gen'){
                 setTimeout(function(){
-                  alertsElem.innerHTML = standardCard.action
+                  alertsElem.innerHTML = 'go gen'
                   alertsElem.classList.add('pending')
                 }, 600)
                 generalCards.classList.add('demandpend')
-                generalCards.querySelector('p').innerHTML = `Tap to ${standardCard.action}`
+                generalCards.querySelector('p').innerHTML = `Tap to pick one`
                 document.querySelectorAll('.mine-overflow .my-card').forEach(card => {
                   card.classList.add('disable')
                 })
+              }else if(standardCard.action == 'pick 2' || standardCard.action == 'pick 3'){
+                  setTimeout(function(){
+                  alertsElem.innerHTML = standardCard.action
+                  alertsElem.classList.add('pending')
+                }, 600)
+                generalCards.classList.remove('demandpend')
+                document.querySelectorAll('.mine-overflow .my-card').forEach(card => {
+                  card.classList.remove('disable')
+                })
+                generalCards.querySelector('p').innerHTML = `Tap to ${standardCard.action}`
               }else{
                 generalCards.classList.remove('demandpend')
                 document.querySelectorAll('.mine-overflow .my-card').forEach(card => {
@@ -544,19 +642,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
           allMyCards.forEach((card, index)=>{
             // card.classList.remove('disable')
             card.addEventListener('click', ()=>{
-              if(myCards.length == 1){
-                if(powerCards.includes(myCards[index].number)){
-                  console.log('cannnot checkup with a power card!')
-                  alert('cannot check up with a power card!')
-                }else{
-                  //check up
-                  const isCheckUp = true
-                  cardTrueEvent(index, isCheckUp)
-                }
+              const theCard = myCards.find(el => el.id == card.dataset.id)
+              // console.log(theCard)
+              if(theCard == 'undefined' || undefined){
+                console.log('ERROR FINDING CARD')
               }else{
-                //not last card
-                const isCheckUp = false
-                cardTrueEvent(index, isCheckUp)
+                if(myCards.length == 1){
+                  if(powerCards.includes(theCard.number)){
+                    console.log('cannnot checkup with a power card!')
+                    alert('cannot check up with a power card!')
+                  }else{
+                    //check up
+                    const isCheckUp = true
+                    cardTrueEvent(index, isCheckUp, theCard)
+                  }
+                }else{
+                  //not last card
+                  const isCheckUp = false
+                  cardTrueEvent(index, isCheckUp, theCard)
+                }
               }
             })
           })
@@ -568,13 +672,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
           alertsElem.classList.add(`player${turn}`)
           console.log('turnn', turn)
           alertsElem.innerHTML = `<span class="join-name">${usersList[turn].userName}'s</span> turn!`
-          // socket.on('lastCard', (details)=>{
-          //   if(details.index == myIndex){
-          //     alert('YOU: LAST CARD!!!')
-          //   }else{
-          //     alert(`${details.name}: LAST CARD!!!`)
-          //   }
-          // })
+          socket.on('lastCard', (details)=>{
+              
+            if(details.index == myIndex){
+                 document.querySelector(".special-alerts").innerHTML = `<span>YOU</span> are on your last card`;
+            }else{
+              document.querySelector(".special-alerts").innerHTML = `<span>${details.name}</span> is on last card`;
+            }
+            document.querySelector('.special-alerts').classList.add('reveal')
+            setTimeout(()=>{
+                document.querySelector('.special-alerts').classList.remove('reveal')
+             }, 3500)
+          })
           const allMyCards = document.querySelectorAll('.mine-overflow .my-card')
           allMyCards.forEach((card, index)=>{
             card.classList.add('disable')
@@ -582,175 +691,709 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     }
 
-    function cardTrueEvent(index, isCheckUp){
+    function cardTrueEvent(index, isCheckUp, theCard){
       if(standardCard.demand != null){
         console.log('demand')
-        if(myCards[index].shape == standardCard.demand){
+        if(theCard.shape == standardCard.demand){
           document.querySelectorAll('.mine-overflow .my-card').forEach(card => {
             card.classList.add('disable')
           })
           console.log('true')
           if(usersList.length - myIndex <= 1){
-            console.log('pre-turn', turn)
+            // console.log('pre-turn', turn)
             turn = 0;
-            console.log('turn check', turn)
-            const playInfo = {
-              myCard: myCards[index],
-              roomName: getCookieValue('roomId'),
-              player: getCookieValue('userName'),
-              gameTurn: turn,
-              special: null
-            }
-            myCards = myCards.filter(function(el){return el != myCards[index]})
-            mineContainer.innerHTML = ''
-            myCards.forEach((mine, index)=>{
-              const myCard = getMyStackCard(mine, index)
-              mineContainer.innerHTML += myCard
-            })
-            // playInfo.myCard.action = 'pick 2'
-            checkLastCard(myCards)
-            if(isCheckUp == true){
-              document.querySelector('.section.mine').classList.add('check-up')
-              socket.emit('change-turn', playInfo)
-              socket.emit('i-finished', usersList[myIndex])
-              alertsElem.classList.remove(`player${turn}`)
+            // console.log('turn check', turn)
+             if(theCard.action =='go gen'){
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
             }else{
-              socket.emit('change-turn', playInfo)
-              alertsElem.classList.remove(`player${turn}`)
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
             }
           }else{
             turn ++;
             console.log('check turn error', turn)
-            const playInfo = {
-              myCard: myCards[index],
-              roomName: getCookieValue('roomId'),
-              player: getCookieValue('userName'),
-              gameTurn: turn,
-              special: null
-            }
-            myCards = myCards.filter(function(el){return el != myCards[index]})
-            mineContainer.innerHTML = ''
-            myCards.forEach((mine, index)=>{
-              const myCard = getMyStackCard(mine, index)
-              mineContainer.innerHTML += myCard
-            })
-            // playInfo.myCard.action = 'pick 2'
-            checkLastCard(myCards)
-            if(isCheckUp == true){
-              document.querySelector('.section.mine').classList.add('check-up')
-              socket.emit('change-turn', playInfo)
-              socket.emit('i-finished', usersList[myIndex])
-              alertsElem.classList.remove(`player${turn}`)
-            }else{
-              // socket.emit('i-finished', usersList[myIndex])
-              socket.emit('change-turn', playInfo)
-              alertsElem.classList.remove(`player${turn}`)
-            }
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
           }
-        }else if(myCards[index].demand == 'demand1'){
+        }else if(theCard.demand == 'demand1'){
           const demandNo = 'demand1'
           demandLogic(index, demandNo)
-        }else if(myCards[index].demand == 'demand2'){
+        }else if(theCard.demand == 'demand2'){
           const demandNo = 'demand2'
           demandLogic(index, demandNo)
-        }else if(myCards[index].demand == 'demand3'){
+        }else if(theCard.demand == 'demand3'){
           const demandNo = 'demand3'
           demandLogic(index, demandNo)
-        }else if(myCards[index].demand == 'demand4'){
+        }else if(theCard.demand == 'demand4'){
           const demandNo = 'demand4'
           demandLogic(index, demandNo)
-        }else if(myCards[index].demand == 'demand5'){
+        }else if(theCard.demand == 'demand5'){
           const demandNo = 'demand5'
           demandLogic(index, demandNo)
         }
         else{
         console.log('false')
       }
-      }else{
-        console.log('no demand')
-        if(myCards[index].number == standardCard.number || myCards[index].shape == standardCard.shape){
-          console.log('true')
-          document.querySelectorAll('.mine-overflow .my-card').forEach(card => {
-            card.classList.add('disable')
-          })
-          if(usersList.length - myIndex <= 1){
-            console.log('pre-turn', turn)
+      }else if (standardCard.action == "pick 2") {
+        if (theCard.action == "pick 3" || theCard.action == "pick 2" || theCard.action == 'go gen') {
+          if (usersList.length -  myIndex <= 1) {
+            console.log("pre-turn", turn);
             turn = 0;
-            console.log('turn check', turn)
-            const playInfo = {
-              myCard: myCards[index],
-              roomName: getCookieValue('roomId'),
-              player: getCookieValue('userName'),
-              gameTurn: turn,
-              special: null
-            }
-            myCards = myCards.filter(function(el){return el != myCards[index]})
-            mineContainer.innerHTML = ''
-            myCards.forEach((mine, index)=>{
-              const myCard = getMyStackCard(mine, index)
-              mineContainer.innerHTML += myCard
-            })
-            // playInfo.myCard.action = 'pick 2'
-            checkLastCard(myCards)
-            if(isCheckUp == true){
-               document.querySelector('.section.mine').classList.add('check-up')
-               socket.emit('change-turn', playInfo)
-               socket.emit('i-finished', usersList[myIndex])
-               alertsElem.classList.remove(`player${turn}`)
-            }else{
-              // socket.emit('i-finished', usersList[myIndex])
-              // socket.emit('last-pile', roomName)
-              socket.emit('change-turn', playInfo)
-              alertsElem.classList.remove(`player${turn}`)
-            }
-          }else{
-            console.log('pre turn', turn)
-            turn ++;
-            console.log('check turn error', turn)
-            const playInfo = {
-              myCard: myCards[index],
-              roomName: getCookieValue('roomId'),
-              player: getCookieValue('userName'),
-              gameTurn: turn,
-              special: null
-            }
-            myCards = myCards.filter(function(el){return el != myCards[index]})
-            mineContainer.innerHTML = ''
-            myCards.forEach((mine, index)=>{
-              const myCard = getMyStackCard(mine, index)
-              mineContainer.innerHTML += myCard
-            })
-            // playInfo.myCard.action = 'pick 2'
-            checkLastCard(myCards)
-            if(isCheckUp == true){
-               document.querySelector('.section.mine').classList.add('check-up')
-               socket.emit('change-turn', playInfo)
-               socket.emit('i-finished', usersList[myIndex])
-               alertsElem.classList.remove(`player${turn}`) 
-            }else{
-              // socket.emit('i-finished', usersList[myIndex])
-              socket.emit('change-turn', playInfo)
-              alertsElem.classList.remove(`player${turn}`)
-            }
+            console.log("turn check", turn);
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
+          } else {
+            console.log("pre turn", turn);
+            turn++;
+            console.log("check turn error", turn);
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
           }
-        }else if(myCards[index].demand == 'demand1'){
-            const demandNo = 'demand1'
-            demandLogic(index, demandNo)
-          }else if(myCards[index].demand == 'demand2'){
-            const demandNo = 'demand2'
-            demandLogic(index, demandNo)
-          }else if(myCards[index].demand == 'demand3'){
-            const demandNo = 'demand3'
-            demandLogic(index, demandNo)
-          }else if(myCards[index].demand == 'demand4'){
-            const demandNo = 'demand4'
-            demandLogic(index, demandNo)
-          }else if(myCards[index].demand == 'demand5'){
-            const demandNo = 'demand5'
-            demandLogic(index, demandNo)
+        }
+      } else if (standardCard.action == "pick 3") {
+        if (theCard.action == "pick 3" || theCard.action == 'go gen') {
+          if (usersList.length - myIndex <= 1) {
+            console.log("pre-turn", turn);
+            turn = 0;
+            console.log("turn check", turn);
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
+          } else {
+            console.log("pre turn", turn);
+            turn++;
+            console.log("check turn error", turn);
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
           }
-          else{
-          console.log('false')
+        }
+      } else {
+        console.log("no demand");
+        if (
+          theCard.number == standardCard.number ||
+          theCard.shape == standardCard.shape
+        ) {
+          console.log("true");
+          document.querySelectorAll(".mine-overflow .my-card").forEach((card) => {
+              card.classList.add("disable");
+            });
+          if (usersList.length - myIndex <= 1) {
+            console.log("pre-turn", turn);
+            turn = 0;
+            console.log("turn check", turn);
+            if(theCard.action =='go gen'){
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+            }else{
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: usersList.length - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+            }
+          } else {
+            console.log("pre turn", turn);
+            turn++;
+            console.log("check turn error", turn);
+             if (theCard.action == "go gen") {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 genInit: myIndex,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             } else {
+               const playInfo = {
+                 myCard: theCard,
+                 roomName: getCookieValue("roomId"),
+                 player: getCookieValue("userName"),
+                 gameTurn: turn,
+                 special: powerCards.includes(theCard.number)
+                   ? {
+                       reciver: turn,
+                       action: standardCard.action,
+                       giver: turn - 1,
+                     }
+                   : null,
+               };
+               myCards = myCards.filter(function (el) {
+                 return el != theCard;
+               });
+               mineContainer.innerHTML = "";
+               myCards.forEach((mine, mIndex) => {
+                 const myCard = getMyStackCard(mine, mIndex);
+                 mineContainer.innerHTML += myCard;
+               });
+               // playInfo.myCard.action = 'pick 2'
+               checkLastCard(myCards);
+               if (isCheckUp == true) {
+                 document
+                   .querySelector(".section.mine")
+                   .classList.add("check-up");
+                 socket.emit("change-turn", playInfo);
+                 socket.emit("i-finished", usersList[myIndex]);
+                 alertsElem.classList.remove(`player${turn}`);
+               } else {
+                 // socket.emit('i-finished', usersList[myIndex])
+                 // socket.emit('last-pile', roomName)
+                 socket.emit("change-turn", playInfo);
+                 alertsElem.classList.remove(`player${turn}`);
+               }
+             }
+          }
+        } else if (theCard.demand == "demand1") {
+          const demandNo = "demand1";
+          demandLogic(index, demandNo);
+        } else if (theCard.demand == "demand2") {
+          const demandNo = "demand2";
+          demandLogic(index, demandNo);
+        } else if (theCard.demand == "demand3") {
+          const demandNo = "demand3";
+          demandLogic(index, demandNo);
+        } else if (theCard.demand == "demand4") {
+          const demandNo = "demand4";
+          demandLogic(index, demandNo);
+        } else if (theCard.demand == "demand5") {
+          const demandNo = "demand5";
+          demandLogic(index, demandNo);
+        } else {
+          console.log("false");
         }
       }
     }
@@ -804,6 +1447,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                              mineContainer.innerHTML += myCard
                            })
                            document.querySelector('.demand-bg').classList.remove('show')
+                             document.querySelector('.full-loader').classList.add('show')
                          socket.emit('change-turn', playInfo)
                          alertsElem.classList.remove(`player${turn}`)
                          hasEmitted = false
@@ -835,6 +1479,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                               mineContainer.innerHTML += myCard
                             })
                             document.querySelector('.demand-bg').classList.remove('show')
+                              document.querySelector('.full-loader').classList.add('show')
                           socket.emit('change-turn', playInfo)
                           alertsElem.classList.remove(`player${turn}`)
                           hasEmitted = false
@@ -894,6 +1539,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 special: null
               }
               playInfo.myCard.action = 'pile 2'
+                document.querySelector(".full-loader").classList.add("show");
               socket.emit('change-turn', playInfo)
               alertsElem.classList.remove(`player${turn}`)
               }else{
@@ -919,6 +1565,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     special: null
                   }
                   playInfo.myCard.action = 'pile 2'
+                    document.querySelector('.full-loader').classList.add('show')
                   socket.emit('change-turn', playInfo)
                   alertsElem.classList.remove(`player${turn}`)
                   // console.log('general')
@@ -929,12 +1576,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }else if(standardCard.action == 'pick 3'){
           console.log('pick 3')
           if(generalPile.length <= 3){
-              // myCards.push(generalPile[+generalPile.length - 1])
-              // myCards.push(generalPile[+generalPile.length - 2])
-              // myCards.push(generalPile[+generalPile.length - 3])
-              // generalPile.pop()
-              // generalPile.pop()
-              // generalPile.pop()
               for (let index = 1; index <= generalPile.length; index++) {
                 myCards.push(generalPile[+generalPile.length - index])
                 generalPile.pop()
@@ -973,6 +1614,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 special: null
               }
               playInfo.myCard.action = 'pile 3'
+                document.querySelector(".full-loader").classList.add("show");
               socket.emit('change-turn', playInfo)
               alertsElem.classList.remove(`player${turn}`)
               }else{
@@ -1000,6 +1642,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     special: null
                   }
                   playInfo.myCard.action = 'pile 3'
+                    document.querySelector('.full-loader').classList.add('show')
                   socket.emit('change-turn', playInfo)
                   alertsElem.classList.remove(`player${turn}`)
                   // console.log('general')
@@ -1039,6 +1682,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 special: null
               }
               playInfo.myCard.action = 'pile'
+                document.querySelector(".full-loader").classList.add("show");
               socket.emit('change-turn', playInfo)
               alertsElem.classList.remove(`player${turn}`)
               }else{
@@ -1062,6 +1706,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     special: null
                   }
                   playInfo.myCard.action = 'pile'
+                    document.querySelector('.full-loader').classList.add('show')
                   socket.emit('change-turn', playInfo)
                   alertsElem.classList.remove(`player${turn}`)
                   // console.log('general')
@@ -1079,60 +1724,98 @@ document.addEventListener('DOMContentLoaded', ()=>{
             })
             socket.emit('last-pile', roomName)
           }else{
-            if(usersList.length - myIndex <= 1){
-              console.log('pre-turn', turn)
-              turn = 0;
-              console.log('turn check', turn)
-              myCards.push(generalPile[+generalPile.length - 1])
-              // generalPile.pop()
-              document.querySelector('.pile-qty').innerHTML = generalPile.length
-              console.log(generalPile)
-              mineContainer.innerHTML = ''
-              myCards.forEach((mine, index)=>{
-                const myCard = getMyStackCard(mine, index)
-                mineContainer.innerHTML += myCard
-              })
-              const playInfo = {
-                myCard: standardCard,
-                roomName: getCookieValue('roomId'),
-                player: getCookieValue('userName'),
-                gameTurn: turn,
-                special: null
-              }
-              playInfo.myCard.action = 'pile'
-              socket.emit('change-turn', playInfo)
-              alertsElem.classList.remove(`player${turn}`)
-              }else{
-                console.log('pre turn', turn)
-                turn ++;
-                console.log('check turn error', turn)
-                  myCards.push(generalPile[+generalPile.length - 1])
-                  // generalPile.pop()
-                  document.querySelector('.pile-qty').innerHTML = generalPile.length
-                  console.log(generalPile)
-                  mineContainer.innerHTML = ''
-                  myCards.forEach((mine, index)=>{
-                    const myCard = getMyStackCard(mine, index)
-                    mineContainer.innerHTML += myCard
-                  })
-                  const playInfo = {
-                    myCard: standardCard,
-                    roomName: getCookieValue('roomId'),
-                    player: getCookieValue('userName'),
-                    gameTurn: turn,
-                    special: null
-                  }
-                  playInfo.myCard.action = 'pile'
-                  socket.emit('change-turn', playInfo)
-                  alertsElem.classList.remove(`player${turn}`)
-                  // console.log('general')
-              }
+            if(fullTurn.genInit){
+              const goGen = true
+              goGenAction(goGen)
+            }else{
+              const goGen = false
+              goGenAction(goGen)
+            }
+            
           }
         }  
-      }else{
-        
       }
     })
+
+    function goGenAction(goGen){
+      if (usersList.length - myIndex <= 1) {
+        console.log("pre-turn", turn);
+        turn = 0;
+        console.log("turn check", turn);
+        myCards.push(generalPile[+generalPile.length - 1]);
+        // generalPile.pop()
+        document.querySelector(".pile-qty").innerHTML = generalPile.length;
+        console.log(generalPile);
+        mineContainer.innerHTML = "";
+        myCards.forEach((mine, index) => {
+          const myCard = getMyStackCard(mine, index);
+          mineContainer.innerHTML += myCard;
+        });
+        if(fullTurn.genInit == 0){
+          const playInfo = {
+            myCard: standardCard,
+            roomName: getCookieValue("roomId"),
+            player: getCookieValue("userName"),
+            gameTurn: turn,
+            special: null,
+          };
+          playInfo.myCard.action = "pile";
+          socket.emit("change-turn", playInfo);
+          alertsElem.classList.remove(`player${turn}`);
+        }else{
+          const playInfo = {
+            myCard: standardCard,
+            roomName: getCookieValue("roomId"),
+            player: getCookieValue("userName"),
+            gameTurn: turn,
+            special: null,
+            genInit: fullTurn.genInit
+          };
+          playInfo.myCard.action = "pile";
+          socket.emit("change-turn", playInfo);
+          alertsElem.classList.remove(`player${turn}`);
+        }
+        
+      } else {
+        console.log("pre turn", turn);
+        turn++;
+        console.log("check turn error", turn);
+        myCards.push(generalPile[+generalPile.length - 1]);
+        // generalPile.pop()
+        document.querySelector(".pile-qty").innerHTML = generalPile.length;
+        console.log(generalPile);
+        mineContainer.innerHTML = "";
+        myCards.forEach((mine, index) => {
+          const myCard = getMyStackCard(mine, index);
+          mineContainer.innerHTML += myCard;
+        });
+          if (fullTurn.genInit == turn) {
+            const playInfo = {
+              myCard: standardCard,
+              roomName: getCookieValue("roomId"),
+              player: getCookieValue("userName"),
+              gameTurn: turn,
+              special: null,
+            };
+            playInfo.myCard.action = "pile";
+            socket.emit("change-turn", playInfo);
+            alertsElem.classList.remove(`player${turn}`);
+          } else {
+            const playInfo = {
+              myCard: standardCard,
+              roomName: getCookieValue("roomId"),
+              player: getCookieValue("userName"),
+              gameTurn: turn,
+              special: null,
+              genInit: fullTurn.genInit,
+            };
+            playInfo.myCard.action = "pile";
+            socket.emit("change-turn", playInfo);
+            alertsElem.classList.remove(`player${turn}`);
+          }
+        // console.log('general')
+      }
+    }
 
     socket.on('last-pile', (last)=>{
       // console.log(myCards)

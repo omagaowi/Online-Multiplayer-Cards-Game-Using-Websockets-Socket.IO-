@@ -137,7 +137,9 @@ io.on('connection', (socket, cb)=>{
     socket.on('reset', (roomId)=>{
         hasStarted =  hasStarted.filter(function(el){return el != roomId})
         hasFinished = hasFinished.filter((el)=> {return el.room != roomId})
-        io.to(roomId).emit('restart', roomId)
+        const roomIdLong = Date.now();
+        const newRoomId = roomIdLong.toString().split("").splice(6, 5).join("");
+        io.to(roomId).emit('restart', newRoomId)
     })
 })
 
@@ -186,6 +188,17 @@ app.get('/ended', (req, res)=>{
 
 app.get('/results', (req, res)=>{
     res.sendFile(__dirname + '/static/results.html')
+})
+
+app.get('/restart/:id', (req, res)=>{
+    const id = req.params.id
+     res.cookie("roomId", id);
+     res.redirect('/room')
+})
+
+app.get('/joinroom/:id', (req, res)=>{
+    //  const id = req.params.id;
+     res.sendFile(__dirname + "/static/name.html");
 })
 
 httpServer.listen(3000);
