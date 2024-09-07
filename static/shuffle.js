@@ -8,8 +8,8 @@ export function myCardAllocation(userNo, userPosition, cards){
         const startingPoint = (threshold * userPosition) - threshold
         const endPoint = startingPoint + threshold
         const pileStart = threshold * userNo
-        console.log('startpoint:', startingPoint)
-        console.log('endpoint:', endPoint)
+        // console.log('startpoint:', startingPoint)
+        // console.log('endpoint:', endPoint)
         myStack = []
         cardPile=[]
         for (let index = startingPoint; index < endPoint; index++) {
@@ -31,8 +31,8 @@ export function myCardAllocation(userNo, userPosition, cards){
         const startingPoint = (threshold * userPosition) - threshold
         const endPoint = startingPoint + threshold
         const pileStart = threshold * userNo
-        console.log('startpoint:', startingPoint)
-        console.log('endpoint:', endPoint)
+        // console.log('startpoint:', startingPoint)
+        // console.log('endpoint:', endPoint)
         myStack = []
         cardPile=[]
         for (let index = startingPoint; index < endPoint; index++) {
@@ -54,8 +54,8 @@ export function myCardAllocation(userNo, userPosition, cards){
         const startingPoint = (threshold * userPosition) - threshold
         const endPoint = startingPoint + threshold
         const pileStart = threshold * userNo
-        console.log('startpoint:', startingPoint)
-        console.log('endpoint:', endPoint)
+        // console.log('startpoint:', startingPoint)
+        // console.log('endpoint:', endPoint)
         myStack = []
         cardPile=[]
         for (let index = startingPoint; index < endPoint; index++) {
@@ -77,8 +77,8 @@ export function myCardAllocation(userNo, userPosition, cards){
         const startingPoint = (threshold * userPosition) - threshold
         const endPoint = startingPoint + threshold
         const pileStart = threshold * userNo
-        console.log('startpoint:', startingPoint)
-        console.log('endpoint:', endPoint)
+        // console.log('startpoint:', startingPoint)
+        // console.log('endpoint:', endPoint)
         myStack = []
         cardPile=[]
         for (let index = startingPoint; index < endPoint; index++) {
